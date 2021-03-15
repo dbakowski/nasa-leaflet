@@ -1,0 +1,14 @@
+.flash-messages {
+  z-index: 1100;
+  position: fixed;
+  bottom: 1rem;
+  min-width: 10rem;
+  max-width: 40vw;
+  left: 1rem;
+
+  > div {
+    padding: 1.5rem;
+    box-shadow: 0 0 5px 0 rgba(43, 43, 43, 0.1), 0 11px 6px -7px rgba(43, 43, 43, 0.1);
+    border-radius: 0.5rem;
+  }
+}
