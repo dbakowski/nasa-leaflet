@@ -4,7 +4,7 @@ import { Observable, Subject } from 'rxjs';
 import { FlashMessageTypeEnum } from '../enum/flash-message-type.enum';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class FlashMessageService {
   private flashMessage$ = new Subject<FlashMessageModel>();
@@ -13,11 +13,11 @@ export class FlashMessageService {
     this.flashMessage$.next({ text, type, timeout })
   }
 
-  sendError(text: string, timeout = 3000): void {
-    this.sendMessage(FlashMessageTypeEnum.Error, text, timeout)
+  sendDanger(text: string, timeout = 3000): void {
+    this.sendMessage(FlashMessageTypeEnum.Danger, text, timeout)
   }
 
   getFlashMessageObservable(): Observable<FlashMessageModel> {
-    return this.flashMessage$;
+    return this.flashMessage$.asObservable();
   }
 }

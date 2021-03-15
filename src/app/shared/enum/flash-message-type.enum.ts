@@ -1,3 +1,3 @@
 export enum FlashMessageTypeEnum {
-  Error = 'danger',
+  Danger = 'danger',
 }
