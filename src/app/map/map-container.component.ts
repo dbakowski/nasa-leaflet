@@ -1,10 +1,12 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NominatimService } from './services/nominatim.service';
 import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
-import { catchError, debounceTime, filter, switchMap, take, takeUntil, tap } from 'rxjs/operators';
+import { catchError, debounceTime, switchMap, take, takeUntil, tap } from 'rxjs/operators';
 import { NominatimSearchResultModel } from './model/nominatim-search-result.model';
 import { indicate } from '../shared/operators/indicate';
 import { NasaEarthImageryService } from './services/nasa-earth-imagery.service';
+import { FlashMessageService } from '../shared/services/flash-message.service';
+import { FlashMessageTypeEnum } from '../shared/enum/flash-message-type.enum';
 
 @Component({
   selector: 'app-map-container',

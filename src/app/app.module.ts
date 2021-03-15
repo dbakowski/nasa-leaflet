@@ -4,6 +4,8 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { MapModule } from './map/map.module';
+import { SharedModule } from './shared/shared.module';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
   declarations: [
@@ -14,6 +16,8 @@ import { MapModule } from './map/map.module';
     AppRoutingModule,
     NgSelectModule,
     MapModule,
+    SharedModule,
+    NgbModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
