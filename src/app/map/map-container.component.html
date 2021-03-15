@@ -1,0 +1,3 @@
+<app-location-search *ngIf="(searchResults$ | async) as searchResults" (searchQuery)="searchQueryChange($event)"
+                     [results]="searchResults" (selection)="setSelection($event)"></app-location-search>
+<app-map [lat]="lat" [lon]="lon"></app-map>
