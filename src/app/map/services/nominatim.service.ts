@@ -10,7 +10,6 @@ export class NominatimService {
   constructor(
     private readonly http: HttpClient,
   ) {
-
   }
 
   private static getBaseUrl(): string {
