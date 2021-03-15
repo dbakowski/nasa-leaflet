@@ -8,6 +8,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { NominatimService } from './services/nominatim.service';
 import { NasaEarthImageryService } from './services/nasa-earth-imagery.service';
 import { FormsModule } from '@angular/forms';
+import { SharedModule } from '../shared/shared.module';
 
 
 @NgModule({
@@ -24,6 +25,7 @@ import { FormsModule } from '@angular/forms';
     NgSelectModule,
     HttpClientModule,
     FormsModule,
+    SharedModule,
   ],
   providers: [
     NominatimService,

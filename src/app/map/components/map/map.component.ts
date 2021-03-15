@@ -1,7 +1,6 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import * as L from 'leaflet';
 import { ImageOverlay, LatLngBounds } from 'leaflet';
-import { NasaEarthImageryService } from '../../services/nasa-earth-imagery.service';
 
 @Component({
   selector: 'app-map',
@@ -11,22 +10,23 @@ import { NasaEarthImageryService } from '../../services/nasa-earth-imagery.servi
 export class MapComponent implements OnInit, OnChanges {
   @Input() lat = 29.78;
   @Input() lon = -95.33;
+  @Input() mapLayer: Blob | null | undefined;
   private map: L.Map | undefined;
   private marker: L.Marker | undefined;
   private layer: ImageOverlay | undefined;
-
-  constructor(
-    private readonly nasaEarthImageryService: NasaEarthImageryService,
-  ) {
-  }
 
   ngOnInit(): void {
     this.initMap();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.lon.currentValue || changes.lat.currentValue && !changes.lon.isFirstChange() && !changes.lat.isFirstChange()) {
+    if ((changes.lon && !changes.lon.isFirstChange())
+      || (changes.lat && !changes.lat.isFirstChange())) {
       this.updateMapOnCoordChange();
+    }
+
+    if (changes.mapLayer && changes.mapLayer.currentValue) {
+      this.layer?.setUrl(URL.createObjectURL(changes.mapLayer.currentValue));
     }
   }
 
@@ -42,9 +42,9 @@ export class MapComponent implements OnInit, OnChanges {
       return;
     }
 
-    this.map.setMaxBounds(this.getBounds());
-    this.layer.setUrl(this.nasaEarthImageryService.getEarthImage(this.lat, this.lon));
-    this.layer.setBounds(this.getBounds());
+    const bounds = this.getBounds();
+    this.map.setMaxBounds(bounds);
+    this.layer.setBounds(bounds);
     this.map.flyTo(L.latLng(this.lat, this.lon));
 
     if (this.marker) {
@@ -64,12 +64,7 @@ export class MapComponent implements OnInit, OnChanges {
       maxBounds: bounds
     });
 
-    const layerUrl = this.nasaEarthImageryService.getEarthImage(this.lat, this.lon);
-    this.layer = L.imageOverlay(layerUrl, bounds);
+    this.layer = L.imageOverlay('', bounds);
     this.layer.addTo(this.map);
-
-    this.layer.on('error', (error: any) => {
-      console.log(error); //TODO: Add user feedback on error
-    });
   }
 }

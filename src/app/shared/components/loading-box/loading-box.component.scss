@@ -1,0 +1,18 @@
+.container {
+  font-size: 2rem;
+  padding: 1.5rem;
+  border-radius: 0.4rem;
+  background-color: white;
+
+  p {
+    margin: 0 0 0 1rem;
+  }
+}
+
+.show {
+  display: flex;
+}
+
+.hide {
+  display: none;
+}

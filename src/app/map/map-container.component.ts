@@ -1,8 +1,10 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NominatimService } from './services/nominatim.service';
-import { BehaviorSubject, Subject } from 'rxjs';
-import { debounceTime, switchMap, takeUntil, tap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
+import { catchError, debounceTime, filter, switchMap, take, takeUntil, tap } from 'rxjs/operators';
 import { NominatimSearchResultModel } from './model/nominatim-search-result.model';
+import { indicate } from '../shared/operators/indicate';
+import { NasaEarthImageryService } from './services/nasa-earth-imagery.service';
 
 @Component({
   selector: 'app-map-container',
@@ -11,6 +13,8 @@ import { NominatimSearchResultModel } from './model/nominatim-search-result.mode
 })
 export class MapContainerComponent implements OnInit, OnDestroy {
   searchResults$ = new BehaviorSubject<NominatimSearchResultModel[]>([]);
+  mapLayer$ = new BehaviorSubject<Blob | undefined>(undefined);
+  loading$ = new BehaviorSubject<number>(0);
   lat = 29.78;
   lon = -95.33;
   private searchQuery$ = new Subject<string>();
@@ -18,11 +22,13 @@ export class MapContainerComponent implements OnInit, OnDestroy {
 
   constructor(
     private readonly nominatimService: NominatimService,
+    private readonly nasaEarthImageryService: NasaEarthImageryService,
   ) {
   }
 
   ngOnInit(): void {
     this.observeQueryChange();
+    this.loadEarthImage();
   }
 
   ngOnDestroy(): void {
@@ -32,16 +38,33 @@ export class MapContainerComponent implements OnInit, OnDestroy {
   setSelection(selection: NominatimSearchResultModel): void {
     this.lat = selection?.lat ?? this.lat;
     this.lon = selection?.lon ?? this.lon;
+    this.loadEarthImage();
   }
 
   searchQueryChange(searchString: string): void {
     this.searchQuery$.next(searchString);
   }
 
+  private loadEarthImage(): void {
+    this.nasaEarthImageryService.getEarthImage(this.lat, this.lon).pipe(
+      indicate(this.loading$),
+      catchError(() => of(undefined)),
+      tap((res: Blob | undefined) => this.mapLayer$.next(res)),
+      take(1)
+    ).subscribe();
+  }
+
+  private loadLocations(query: string): Observable<NominatimSearchResultModel[]> {
+    return this.nominatimService.findLocations(query).pipe(
+      indicate(this.loading$),
+      catchError(() => of([])),
+    );
+  }
+
   private observeQueryChange(): void {
     this.searchQuery$.pipe(
       debounceTime(300),
-      switchMap((query: string) => this.nominatimService.findLocations(query)),
+      switchMap((query: string) => this.loadLocations(query)),
       tap((results: NominatimSearchResultModel[]) => this.searchResults$.next(results)),
       takeUntil(this.destroy$),
     ).subscribe();

@@ -3,5 +3,12 @@ app-location-search {
   top: 1rem;
   width: 90%;
   right: 5%;
-  z-index: 314159;
+  z-index: 1000;
+}
+
+app-loading-box {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  z-index: 1000;
 }
