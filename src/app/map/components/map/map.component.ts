@@ -1,7 +1,7 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import * as L from 'leaflet';
 import { ImageOverlay, LatLngBounds } from 'leaflet';
-import { NasaEarthImageryService } from '../services/nasa-earth-imagery.service';
+import { NasaEarthImageryService } from '../../services/nasa-earth-imagery.service';
 
 @Component({
   selector: 'app-map',
@@ -12,6 +12,7 @@ export class MapComponent implements OnInit, OnChanges {
   @Input() lat = 29.78;
   @Input() lon = -95.33;
   private map: L.Map | undefined;
+  private marker: L.Marker | undefined;
   private layer: ImageOverlay | undefined;
 
   constructor(
@@ -24,8 +25,8 @@ export class MapComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.lon || changes.lat) {
-      this.reloadMapOnCoordChange();
+    if (changes.lon.currentValue || changes.lat.currentValue && !changes.lon.isFirstChange() && !changes.lat.isFirstChange()) {
+      this.updateMapOnCoordChange();
     }
   }
 
@@ -36,15 +37,21 @@ export class MapComponent implements OnInit, OnChanges {
     );
   }
 
-  private reloadMapOnCoordChange(): void {
+  private updateMapOnCoordChange(): void {
     if (!this.map || !this.layer) {
       return;
     }
 
     this.map.setMaxBounds(this.getBounds());
     this.layer.setUrl(this.nasaEarthImageryService.getEarthImage(this.lat, this.lon));
+    this.layer.setBounds(this.getBounds());
     this.map.flyTo(L.latLng(this.lat, this.lon));
-    L.marker([this.lat, this.lon]).addTo(this.map);
+
+    if (this.marker) {
+      this.map.removeLayer(this.marker);
+    }
+
+    this.marker = L.marker([this.lat, this.lon]).addTo(this.map);
   }
 
   private initMap(): void {
@@ -53,7 +60,7 @@ export class MapComponent implements OnInit, OnChanges {
       center: [this.lat, this.lon],
       zoom: 8,
       minZoom: 8,
-      zoomControl: false,
+      zoomControl: false, //TODO: Enable zoom
       maxBounds: bounds
     });
 

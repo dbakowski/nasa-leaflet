@@ -1,0 +1,6 @@
+<div class="location-search-container">
+  <ng-select [items]="results" bindLabel="displayName" placeholder="Search for location"
+             (change)="selection.emit($event)"
+             (search)="searchQuery.emit($event.term)">
+  </ng-select>
+</div>
