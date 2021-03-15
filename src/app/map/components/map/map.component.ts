@@ -60,9 +60,13 @@ export class MapComponent implements OnInit, OnChanges {
       center: [this.lat, this.lon],
       zoom: 8,
       minZoom: 8,
-      zoomControl: false, //TODO: Enable zoom
+      zoomControl: false,
       maxBounds: bounds
     });
+
+    L.control.zoom({
+      position: 'bottomleft'
+    }).addTo(this.map);
 
     this.layer = L.imageOverlay('', bounds);
     this.layer.addTo(this.map);
