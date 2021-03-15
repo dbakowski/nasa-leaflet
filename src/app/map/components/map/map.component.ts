@@ -1,6 +1,6 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import * as L from 'leaflet';
-import { ImageOverlay, LatLngBounds } from 'leaflet';
+import { icon, ImageOverlay, LatLngBounds } from 'leaflet';
 
 @Component({
   selector: 'app-map',
@@ -37,6 +37,21 @@ export class MapComponent implements OnInit, OnChanges {
     );
   }
 
+  private setMarker(): void {
+    if (!this.map) {
+      return;
+    }
+
+    this.marker = L.marker([this.lat, this.lon], {
+      icon: icon({
+        iconSize: [25, 41],
+        iconAnchor: [13, 41],
+        iconUrl: 'assets/marker-icon.png',
+        shadowUrl: 'assets/marker-shadow.png'
+      })
+    }).addTo(this.map);
+  }
+
   private updateMapOnCoordChange(): void {
     if (!this.map || !this.layer) {
       return;
@@ -51,7 +66,7 @@ export class MapComponent implements OnInit, OnChanges {
       this.map.removeLayer(this.marker);
     }
 
-    this.marker = L.marker([this.lat, this.lon]).addTo(this.map);
+    this.setMarker();
   }
 
   private initMap(): void {
