@@ -5,8 +5,7 @@ import { catchError, debounceTime, switchMap, take, takeUntil, tap } from 'rxjs/
 import { NominatimSearchResultModel } from './model/nominatim-search-result.model';
 import { indicate } from '../shared/operators/indicate';
 import { NasaEarthImageryService } from './services/nasa-earth-imagery.service';
-import { FlashMessageService } from '../shared/services/flash-message.service';
-import { FlashMessageTypeEnum } from '../shared/enum/flash-message-type.enum';
+import { ErrorHandlerService } from '../shared/services/error-handler.service';
 
 @Component({
   selector: 'app-map-container',
@@ -25,6 +24,7 @@ export class MapContainerComponent implements OnInit, OnDestroy {
   constructor(
     private readonly nominatimService: NominatimService,
     private readonly nasaEarthImageryService: NasaEarthImageryService,
+    private readonly errorHandler: ErrorHandlerService,
   ) {
   }
 
@@ -50,6 +50,7 @@ export class MapContainerComponent implements OnInit, OnDestroy {
   private loadEarthImage(): void {
     this.nasaEarthImageryService.getEarthImage(this.lat, this.lon).pipe(
       indicate(this.loading$),
+      tap(this.errorHandler.createErrorObserver('Error occurred while getting earth image')),
       catchError(() => of(undefined)),
       tap((res: Blob | undefined) => this.mapLayer$.next(res)),
       take(1)
@@ -67,6 +68,7 @@ export class MapContainerComponent implements OnInit, OnDestroy {
     this.searchQuery$.pipe(
       debounceTime(300),
       switchMap((query: string) => this.loadLocations(query)),
+      tap(this.errorHandler.createErrorObserver('Error occurred while getting locations')),
       tap((results: NominatimSearchResultModel[]) => this.searchResults$.next(results)),
       takeUntil(this.destroy$),
     ).subscribe();
