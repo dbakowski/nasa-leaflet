@@ -1,4 +1,4 @@
-.container {
+.loading-box-container {
   font-size: 2rem;
   padding: 1.5rem;
   border-radius: 0.4rem;
@@ -7,12 +7,4 @@
   p {
     margin: 0 0 0 1rem;
   }
-}
-
-.show {
-  display: flex;
-}
-
-.hide {
-  display: none;
 }
