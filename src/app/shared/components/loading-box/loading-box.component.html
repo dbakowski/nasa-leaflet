@@ -1,6 +1,6 @@
 <div *ngIf="loading !== null && loading !== undefined"
-     class="container d-flex flex-row"
-     [ngClass]="{ show: loading > 1, hide: loading === 0 }">
+     class="loading-box-container flex-row"
+     [ngClass]="{ 'd-flex': loading > 0, 'd-none': loading === 0 }">
   <fa-icon [icon]="faSpinner" size="lg" [spin]="true"></fa-icon>
   <p>Loading...</p>
 </div>
